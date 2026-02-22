@@ -104,7 +104,7 @@
 
   - name: Print Ec2 destroy response
     ansible.builtin.debug:
-      msg: "ec2_delete_response"
+      msg: "{{ec2_delete_response}}"
     
 
 
