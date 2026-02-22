@@ -29,10 +29,6 @@
     loop: "{{ instances }}"
     when: operation == "create"
 
-  - name: Print EC2 response
-    ansible.builtin.debug:
-      msg: "{{ ec2_output }}"
-
   - name: Route53 Record update
     amazon.aws.route53:
       zone: "{{ domain_name }}"
@@ -47,22 +43,18 @@
     loop: "{{ ec2_output.results }}"
     when: operation == "create"
 
-  - name: Print R53 response
-    ansible.builtin.debug:
-      msg: "{{ r53_output }}"
-
   - name: Route53 record for frontend
-  amazon.aws.route53:
-    zone: "{{ domain_name }}"
-    record: "roboshop-{{ env }}.{{ domain_name }}"
-    type: A
-    value: "{{ item.instances[0].public_ip_address }}"
-    ttl: 300
-    wait: false
-    overwrite: true
-    state: present
-  loop: "{{ ec2_output.results }}"
-  when:
+    amazon.aws.route53:
+      zone: "{{ domain_name }}"
+      record: "roboshop-{{ env }}.{{ domain_name }}"
+      type: A
+      value: "{{ item.instances[0].public_ip_address }}"
+      ttl: 300
+      wait: false
+      overwrite: true
+      state: present
+    loop: "{{ ec2_output.results }}"
+    when:
     - item.item == "frontend"
     - operation == "create"
     
@@ -89,10 +81,6 @@
     register: r53_delete_response
     loop: "{{ instances }}"
     when: operation == "destroy"
-
-  - name: Print R53 delete response
-    ansible.builtin.debug:
-      msg: "{{ r53_delete_response }}"
   
   - name: Destroy EC2 instance
     amazon.aws.ec2_instance:
@@ -103,10 +91,6 @@
     loop: "{{ instances }}"
     when: operation == "destroy"
 
-  - name: Print Ec2 destroy response
-    ansible.builtin.debug:
-      msg: "{{ ec2_delete_response }}"
-    
 
 
     
