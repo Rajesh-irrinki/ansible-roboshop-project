@@ -34,15 +34,15 @@
       
   - name: R53 record update
     amazon.aws.route53:
-      hosted_zone_id: {{ zone_id }}
-      zone: {{ domain_name }}
-      record: {{item.item}}-{{env}}-{{domain_name}}
+      hosted_zone_id: "{{ zone_id }}"
+      zone: "{{ domain_name }}"
+      record: "{{item.item}}-{{env}}-{{domain_name}}"
       type: A
-      value: {{ item.instance[0].rivate_ip_address }}
+      value: "{{ item.instance[0].rivate_ip_address }}"
       ttl: 300
       state: present
       overwrite: true
-    loop: {{ec2_output.results}}
+    loop: "{{ec2_output.results}}"""
     when: action == "create" and "item.item" != "frontend"
     
 
