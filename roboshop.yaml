@@ -103,7 +103,7 @@
     when: action == "destroy"
 
   - name: Print Ec2 destroy response
-    ansible.bultin.debug:
+    ansible.builtin.debug:
       msg: "ec2_delete_response"
     
 
