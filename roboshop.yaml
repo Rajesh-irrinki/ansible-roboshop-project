@@ -1,5 +1,5 @@
 - name: crate EC2 instance and update R53 records
-  hosts: all
+  hosts: local
   connection: local
   become: yes
   vars:
