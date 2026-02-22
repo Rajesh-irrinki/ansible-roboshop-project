@@ -34,7 +34,6 @@
       
   - name: R53 record update
     amazon.aws.route53:
-      hosted_zone_id: "{{ zone_id }}"
       zone: "{{ domain_name }}"
       record: "{{item.item}}-{{env}}-{{domain_name}}"
       type: A
