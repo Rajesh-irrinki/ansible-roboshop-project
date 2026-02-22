@@ -7,7 +7,7 @@
     sg_id: "sg-0238a21d11979a649"
     domain_name: "rajeshirrinki.online"
     env: "dev"
-    action: "create"
+    operation : "create"
     instances:
     - mongodb
     - catalogue
@@ -26,26 +26,26 @@
         name: "{{ item }}-{{ env }}"
         component: "{{ item }}"
     register: ec2_output
-    loop: "{{instances}}"
-    when: action == "create"
+    loop: "{{ instances }}"
+    when: operation == "create"
 
   - name: Print EC2 response
     ansible.builtin.debug:
-      msg: "{{ec2_output}}"
+      msg: "{{ ec2_output }}"
 
   - name: Route53 Record update
     amazon.aws.route53:
-      zone: "{{domain_name}}"
-      record: "{{ item.item }}-{{env}}.{{ domain_name }}"
+      zone: "{{ domain_name }}"
+      record: "{{ item.item }}-{{ env }}.{{ domain_name }}"
       state: present
       type: A
-      value: "{{item.instances[0].private_ip_address}}"
+      value: "{{ item.instances[0].private_ip_address }}"
       ttl: 300
       wait: false
       overwrite: true
     register: r53_output
     loop: "{{ ec2_output.results }}"
-    when: action == "create"
+    when: operation == "create"
 
   - name: Print R53 response
     ansible.builtin.debug:
@@ -56,39 +56,39 @@
       zone: "{{ domain_name }}"
       record: "roboshop-{{ env }}.{{ domain_name }}"
       type: A
-      value: "{{item.instances[0].public_ip_address}}"
+      value: "{{ item.instances[0].public_ip_address }}"
       ttl: 300
       wait: false
       overwrite: true
       state: present
     loop: "{{ ec2_output.results }}"
     when: 
-    - item.item == frontend
-    - action == "create"
+    - item.item == "frontend"
+    - operation == "create"
     
 
   ################### Destroy #######################
-    - name: Destroy R53 record
+  - name: Destroy R53 record
     amazon.aws.route53:
       state: absent
       zone: "{{ domain_name }}"
-      record: "roboshop-{{env}}.{{domain_name}}"
+      record: "roboshop-{{ env }}.{{ domain_name }}"
       type: A
     register: r53_delete_response
-    loop: "{{instances}}"
+    loop: "{{ instances }}"
     when: 
-    - action == "destroy"
+    - operation == "destroy"
     - item == "frontend"
 
   - name: Destroy R53 record
     amazon.aws.route53:
       state: absent
       zone: "{{ domain_name }}"
-      record: "{{item}}-{{env}}.{{domain_name}}"
+      record: "{{ item }}-{{ env }}.{{ domain_name }}"
       type: A
     register: r53_delete_response
-    loop: "{{instances}}"
-    when: action == "destroy"
+    loop: "{{ instances }}"
+    when: operation == "destroy"
 
   - name: Print R53 delete response
     ansible.builtin.debug:
@@ -101,11 +101,11 @@
       wait: false
     register: ec2_delete_response
     loop: "{{ instances }}"
-    when: action == "destroy"
+    when: operation == "destroy"
 
   - name: Print Ec2 destroy response
     ansible.builtin.debug:
-      msg: "{{ec2_delete_response}}"
+      msg: "{{ ec2_delete_response }}"
     
 
 
