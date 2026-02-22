@@ -67,7 +67,7 @@
     - operation == "create"
     
 
-  ################### Destroy #######################
+  ## destroy
   - name: Destroy R53 record
     amazon.aws.route53:
       state: absent
