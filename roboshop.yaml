@@ -63,8 +63,9 @@
       state: present
     loop: "{{ ec2_output.results }}"
     when: 
-    - action == "create"
     - item.item == "frontend"
+    - action == "create"
+    
 
   ################### Destroy #######################
     - name: Destroy R53 record
