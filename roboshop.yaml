@@ -27,7 +27,7 @@
         Component: "{{ item }}"
       loop: "{{ instances }}" 
       register: ec2_output
-      when: action == create
+      when: action == "create"
 
   - name: print the response
     ansible.builtin.debug:
