@@ -29,9 +29,9 @@
       register: ec2_output
       when: action == create
 
-    - name: print the response
-      ansible.builtin.debug:
-        msg: "{{ ec2_output }}"
+  - name: print the response
+    ansible.builtin.debug:
+      msg: "{{ ec2_output }}"
       
     # - name: R53 record update
     #   amazon.aws.route53:
