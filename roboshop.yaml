@@ -24,9 +24,9 @@
         Project: Roboshop
         Env: "{{ env }}"
         Component: "{{ item }}"
-      loop: "{{ instances }}" 
-      register: ec2_output
-      when: action == "create"
+    loop: "{{ instances }}" 
+    register: ec2_output
+    when: action == "create"
 
   - name: print the response
     ansible.builtin.debug:
