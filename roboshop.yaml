@@ -38,7 +38,7 @@
       zone: "{{ domain_name }}"
       record: "{{item.item}}-{{env}}-{{domain_name}}"
       type: A
-      value: "{{ item.instance[0].rivate_ip_address }}"
+      value: "{{ item.instances[0].rivate_ip_address }}"
       ttl: 300
       state: present
       overwrite: true
