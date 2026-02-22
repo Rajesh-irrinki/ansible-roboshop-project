@@ -1,0 +1,32 @@
+- name: Playbook for mongodb
+  hosts: mongodb
+  become: yes
+  vars:
+
+  tasks:
+  - name: Copy Mongo repo
+    ansible.builtin.copy:
+      src: mongo.repo
+      dst: /etc/yum.repos.d/mongo.repo
+      remote_src: false
+  
+  - name: Install Mongodb
+    ansible.builtin.package:
+      name: mongodb-org
+      state: present
+
+  - name: Allow remote connections
+    ansible.builtin.replace:
+      path: /etc/mongod.conf
+      regexp: "127.0.0.1"
+      replace: "0.0.0.0"
+      backup: yes
+
+  - name: Start service
+    ansible.builtin.service:
+      name: mongod
+      state: present
+      enabled: yes
+
+ 
+
