@@ -1,4 +1,4 @@
-- name: crate EC2 instance and update R53 records
+- name: AWS EC2 and R53 service
   hosts: local
   connection: local
   become: yes
@@ -6,87 +6,109 @@
     ami_id: "ami-0220d79f3f480ecf5"
     sg_id: "sg-0238a21d11979a649"
     domain_name: "rajeshirrinki.online"
-    action: "create"
     env: "dev"
+    action: "create"
     instances:
     - mongodb
     - catalogue
     - frontend
   tasks:
-  - name: create EC2 instance
+  - name: Create EC2 instance
     amazon.aws.ec2_instance:
       name: "{{ item }}-{{ env }}"
       instance_type: "t3.micro"
       image_id: "{{ ami_id }}"
       security_group: "{{ sg_id }}"
+      state: present
       tags:
-        Name: "{{ item }}-{{ env }}}"
-        Project: Roboshop
-        Env: "{{ env }}"
-        Component: "{{ item }}"
-    loop: "{{ instances }}" 
+        Project: "Roboshop"
+        Environment: "{{ env }}"
+        name: "{{ item }}-{{ env }}"
+        component: "{{ item }}"
     register: ec2_output
+    loop: "{{instances}}"
     when: action == "create"
 
-  - name: print the response
+  - name: Print EC2 response
     ansible.builtin.debug:
-      msg: "{{ ec2_output }}"
-      
-  - name: create r53 records
+      msg: "{{ec2_output}}"
+
+  - name: Route53 Record update
     amazon.aws.route53:
+      zone: "{{domain_name}}"
+      record: "{{ item.item }}-{{env}}.{{ domain_name }}"
       state: present
-      zone: "{{ domain_name }}"
-      record: "{{ item.item }}-{{ env }}.{{ domain_name }}" # mongodb-dev.rajeshirrinki.online
       type: A
-      ttl: 1
-      value: "{{ item.instances[0].private_ip_address }}"
+      value: "{{item.instances[0].private_ip_address}}"
+      ttl: 300
       wait: false
       overwrite: true
-    loop: "{{ ec2_output.results }}" # list
+    register: r53_output
+    loop: "{{ ec2_output.results }}"
     when: action == "create"
 
-  - name: create r53 record for frontend
+  - name: Print R53 response
+    ansible.builtin.debug:
+      msg: "{{ r53_output }}"
+
+  - name: Route53 record for frontend
     amazon.aws.route53:
-      state: present
       zone: "{{ domain_name }}"
-      record: "roboshop-{{ env }}.{{ domain_name }}" # roboshop-dev.rajeshirrinki.online
+      record: "roboshop-{{ env }}.{{ domain_name }}"
       type: A
-      ttl: 1
-      value: "{{ item.instances[0].public_ip_address }}"
+      value: "{{item.instances[0].public_ip_address}}"
+      ttl: 300
       wait: false
       overwrite: true
+      state: present
     loop: "{{ ec2_output.results }}"
-    when:  # and
-    - item.item == "frontend"
+    when: 
     - action == "create"
+    - item.item == "frontend"
 
-##### DESTROY ###
-  - name: delete r53 records for frontend
+  ################### Destroy #######################
+    - name: Destroy R53 record
     amazon.aws.route53:
       state: absent
       zone: "{{ domain_name }}"
-      record: "roboshop-{{ env }}.{{ domain_name }}" # roboshop-dev.rajeshirrinki.online
+      record: "roboshop-{{env}}.{{domain_name}}"
       type: A
-      ttl: 1
-    loop: "{{ instances }}"
-    when:  # and
-    - item == "frontend"
+    register: r53_delete_response
+    loop: "{{instances}}"
+    when: 
     - action == "destroy"
+    - item == "frontend"
 
-  - name: delete r53 records
+  - name: Destroy R53 record
     amazon.aws.route53:
       state: absent
       zone: "{{ domain_name }}"
-      record: "{{ item }}-{{ env }}.{{ domain_name }}" # roboshop-dev.rajeshirrinki.online
+      record: "{{item}}-{{env}}.{{domain_name}}"
       type: A
-      ttl: 1
-    loop: "{{ instances }}"
+    register: r53_delete_response
+    loop: "{{instances}}"
     when: action == "destroy"
 
-  - name: delete ec2 instance
+  - name: Print R53 delete response
+    ansible.builtin.debug:
+      msg: "{{ r53_delete_response }}"
+  
+  - name: Destroy EC2 instance
     amazon.aws.ec2_instance:
       state: absent
       name: "{{ item }}-{{ env }}"
       wait: false
+    register: ec2_delete_response
     loop: "{{ instances }}"
     when: action == "destroy"
+
+  - name: Print Ec2 destroy response
+    ansible.bultin.debug:
+      msg: "ec2_delete_response"
+    
+
+
+    
+
+
+
