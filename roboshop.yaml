@@ -42,7 +42,7 @@
       ttl: 300
       state: present
       overwrite: true
-    loop: "{{ec2_output.results}}"""
+    loop: "{{ec2_output.results}}"
     when: action == "create" and "item.item" != "frontend"
     
 
