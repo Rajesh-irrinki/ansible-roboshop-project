@@ -5,7 +5,6 @@
   vars:
     ami_id: "ami-0220d79f3f480ecf5"
     sg_id: "sg-0238a21d11979a649"
-    zone_id: "Z04304691CJEXLOI5ZISX"
     domain_name: "rajeshirrinki.online"
     action: "create"
     env: "dev"
