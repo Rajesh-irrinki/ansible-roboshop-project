@@ -1,0 +1,35 @@
+- name: Playbook for catalogue
+  hosts: catalogue
+  become: yes
+  tasks:
+  - name: Install Nodejs 20
+    ansible.builtin.dnf:
+      name: nodje == 20
+      state: present
+  
+  - name: System user creation
+    ansible.builtin.user:
+      name: roboshop
+      system: yes
+      home: /app
+      shell: /sbin/nologin
+      comment: "roboshop system user"
+      state: present
+  
+  - name: Create App directory
+    ansible.builtin.file:
+      path: /app
+      state: directory
+
+  - name: Download Catalogue code
+    ansible.builtin.get_url:
+      url: https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip 
+      dest: /tmp/catalogue.zip
+
+  - name: Unzip catalogue code
+    ansible.builtin.unarchive:
+      src: /tmp/catalogue.zip
+      dest: /app
+      remote_src: false
+
+  - name: 

@@ -1,8 +1,6 @@
 - name: Playbook for mongodb
   hosts: mongodb
   become: yes
-  vars:
-
   tasks:
   - name: Copy Mongo repo
     ansible.builtin.copy:
