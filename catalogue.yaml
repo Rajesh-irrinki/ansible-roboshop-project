@@ -77,8 +77,12 @@
   - name: check data already exists in db
     ansible.builtin.command: mongosh --host {{ MONGODB_HOST }} --quiet --eval 'db.getMongo().getDBNames().indexOf("catalogue")' 
     register: status
+  
+  - name: print status
+    ansible.builtin.debug:
+      msg: "{{ status }}"
 
   - name: Load data to db
     ansible.builtin.shell : mongosh --host {{ MONGODB_HOST }} </app/db/master-data.js 
-    when: status < 0
+    when: status< 0
 
