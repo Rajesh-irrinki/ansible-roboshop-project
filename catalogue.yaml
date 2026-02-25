@@ -22,7 +22,6 @@
   - name: Removing existing app directory
     ansible.builtin.file:
       path: /app
-      recurse: yes
       state: absent
   
   - name: Create App directory
