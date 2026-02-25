@@ -2,9 +2,12 @@
   hosts: catalogue
   become: yes
   tasks:
+  - name: Enable Nodejs20
+    ansible.builtin.command:  "dnf enable module nodejs:20 -y"
+
   - name: Install Nodejs 20
     ansible.builtin.dnf:
-      name: nodje == 20
+      name: nodejs
       state: present
   
   - name: System user creation
@@ -15,11 +18,22 @@
       shell: /sbin/nologin
       comment: "roboshop system user"
       state: present
+
+  - name: Removing existing app directory
+    ansible.builtin.file:
+      path: /app
+      recurse: yes
+      state: absent
   
   - name: Create App directory
     ansible.builtin.file:
       path: /app
       state: directory
+
+  - name: Removing existing ZIP file 
+    ansible.builtin.file:
+      path: /tmp/catalogue.zip
+      state: absent
 
   - name: Download Catalogue code
     ansible.builtin.get_url:
@@ -32,4 +46,36 @@
       dest: /app
       remote_src: false
 
-  - name: 
+  - name: Installing Dependencies
+    community.general.npm:
+      path: /app
+  
+  - name: Creating systemctl service
+    ansible.builtin.file:
+      src: catalogue.service
+      dest: /etc/systemd/system/catalogue.service
+      state: present
+
+  - name: Daemon reload
+    ansible.builtin.systemd_service:
+      daemon_reload: true 
+
+  - name: Enabling and starting Service
+    ansible.builtin.systemd_service:
+      name: catalogue
+      state: started
+      enabled: true
+      
+  - name: Install Mongodb client
+    ansible.builtin.dnf:
+      name: mongodb-mongosh
+      state: present
+
+  - name: check data already exists in db
+    ansible.builtin.command: mongosh --host $mongodb_host --quiet --eval 'db.getMongo().getDBNames().indexOf("catalogue")' 
+    register: status
+
+  - name: Load data to db
+    ansible.builtin.shell : mongosh --host MONGODB-SERVER-IPADDRESS </app/db/master-data.js 
+    when: status < 0
+
