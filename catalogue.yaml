@@ -53,7 +53,6 @@
     ansible.builtin.file:
       src: catalogue.service
       dest: /etc/systemd/system/catalogue.service
-      state: present
 
   - name: Daemon reload
     ansible.builtin.systemd_service:
