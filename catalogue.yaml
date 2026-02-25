@@ -50,7 +50,7 @@
       path: /app
   
   - name: Creating systemctl service
-    ansible.builtin.file:
+    ansible.builtin.copy:
       src: catalogue.service
       dest: /etc/systemd/system/catalogue.service
 
