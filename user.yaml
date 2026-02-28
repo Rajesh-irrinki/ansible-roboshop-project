@@ -1,5 +1,5 @@
 - name: Installing User microservice
-  host: user
+  hosts: user
   become: yes
   tasks:
   - name: Enabling NodeJs 20
