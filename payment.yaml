@@ -55,7 +55,6 @@
     ansible.builtin.template:
       src: payment.service
       dest: /etc/systemd/system/payment.service
-      state: present
 
   - name: Enable and start payment service
     ansible.builtin.systemd_service:
