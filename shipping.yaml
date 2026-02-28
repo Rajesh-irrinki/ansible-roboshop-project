@@ -4,8 +4,11 @@
   tasks:
   - name: Install Maven
     ansible.builtin.dnf: 
-      name: maven
+      name: "{{ item }}"
       state: present
+    loop:
+    - maven
+    - mysql
   
   - name: Roboshop user creation
     ansible.builtin.user:
@@ -92,6 +95,7 @@
     ansible.builtin.systemd_service:
       name: shipping
       state: restarted
+      enabled: yes
   
 
    
