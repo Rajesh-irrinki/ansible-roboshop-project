@@ -46,7 +46,7 @@
   
   - name: Creating systemd cart service
     ansible.builtin.template:
-      path: cart.service
+      src: cart.service
       dest: /etc/systemd/system/cart.service
       remote_src: true
 
