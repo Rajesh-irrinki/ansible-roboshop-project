@@ -54,16 +54,6 @@
       src: catalogue.service
       dest: /etc/systemd/system/catalogue.service
 
-  - name: Daemon reload
-    ansible.builtin.systemd_service:
-      daemon_reload: true 
-
-  - name: Enabling and starting Service
-    ansible.builtin.systemd_service:
-      name: catalogue
-      state: started
-      enabled: true
-
   - name: Copy Mongo.repo
     ansible.builtin.copy:
       src: mongo.repo
@@ -82,3 +72,12 @@
     ansible.builtin.shell : mongosh --host {{ MONGODB_HOST }} </app/db/master-data.js 
     when: status.stdout | int < 0
 
+ - name: Daemon reload
+    ansible.builtin.systemd_service:
+      daemon_reload: true 
+
+  - name: Enabling and starting Service
+    ansible.builtin.systemd_service:
+      name: catalogue
+      state: started
+      enabled: true
