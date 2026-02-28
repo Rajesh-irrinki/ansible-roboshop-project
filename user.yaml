@@ -46,7 +46,7 @@
       state: present
 
   - name: Creating systemd user service
-    ansibel.builtin.copy:
+    ansible.builtin.copy:
       src: user.service
       dest: /etc/systemd/system/user.service
   
