@@ -48,7 +48,6 @@
     ansible.builtin.template:
       src: cart.service
       dest: /etc/systemd/system/cart.service
-      remote_src: true
 
   - name: Enable and restart cart service
     ansible.builtin.systemd_service:
