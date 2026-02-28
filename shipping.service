@@ -4,7 +4,7 @@ Description=Shipping Service
 [Service]
 User=roboshop 
 
-Environment=cart-dev.rajeshirrinki.online:8080
+Environment=CART_ENDPOINT=cart-dev.rajeshirrinki.online:8080
 Environment=DB_HOST=mysql-dev.rajeshirrinki.online
 
 ExecStart=/bin/java -jar /app/shipping.jar
