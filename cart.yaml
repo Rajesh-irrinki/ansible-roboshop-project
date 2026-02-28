@@ -43,6 +43,11 @@
       src: /tmp/cart.zip
       dest: /app
       remote_src: true
+
+  - name: Install dependencies
+    community.general.npm:
+      path: /app
+      state: present 
   
   - name: Creating systemd cart service
     ansible.builtin.template:
