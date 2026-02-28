@@ -1,0 +1,65 @@
+- name: Installing User microservice
+  host: user
+  become: yes
+  tasks:
+  - name: Enabling NodeJs 20
+    ansible.builtin.command: dnf module enable nodejs:20 -y
+  
+  - name: Installing NodeJs 
+    ansible.builtin.dnf:
+      name: nodejs
+      state: present
+  
+  - name: System user creation
+    ansible.builtin.user:
+      name: roboshop
+      home: /app
+      shell: /sbin/nologin
+      system: true
+      message: "This is roboshop system user"
+      state: present
+  
+  - name: Remove existing app directory
+    ansible.builtin.file:
+      path: /app
+      state: absent
+
+  - name: Removing existing zip file
+    ansible.builtin.file:
+      path: /tmp/user.zip
+      state: absent
+  
+  - name: Downloading user code
+    ansible.builtin.get_url:
+      dest: /tmp/user.zip
+      url: https://roboshop-artifacts.s3.amazonaws.com/user-v3.zip
+  
+  - name: Untarring the Code in app directory
+    ansible.builtin.unarchive:
+      src: /tmp/user.zip
+      dest: /app
+      remote_src: yes 
+  
+  - name: Installing dependencies
+    community.general.npm:
+      path: /app
+      state: present
+
+  - name: Creating systemd user service
+    ansibel.builtin.copy:
+      src: user.service
+      dest: /etc/systemd/system/user.service
+  
+  - name: Daemon reload
+    ansible.builtin.systemd_service:
+      daemon_reload: true
+  
+  - name: Enable and start service
+    ansible.builtin.systemd_service:
+      name: user
+      state: started
+      enabled: true
+  
+
+
+
