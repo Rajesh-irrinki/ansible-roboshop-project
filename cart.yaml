@@ -34,7 +34,7 @@
       state: absent
   
   - name: Downloading cart code
-    ansbile.builtin.get_url:
+    ansible.builtin.get_url:
       url: https://roboshop-artifacts.s3.amazonaws.com/cart-v3.zip
       dest: /tmp/cart.zip
       state: present
