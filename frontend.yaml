@@ -9,11 +9,6 @@
     ansible.builtin.dnf:
       name: nginx
       state: present
-    
-  - name: remove existing code
-    ansible.builtin.file:
-      path: /usr/share/nginx/html/
-      state: absent
 
   - name: Removing existing zip file
     ansible.builtin.file:
@@ -24,7 +19,17 @@
     ansible.builtin.get_url:
       url: https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip
       dest: /tmp/frontend.zip
+
+  - name: remove existing code
+    ansible.builtin.file:
+      path: /usr/share/nginx/html/
+      state: absent
   
+  - name: Create nginx directory
+    ansible.builtin.file:
+      path: /usr/share/nginx/html/
+      state: directory
+    
   - name: Untaring the ZIP file
     ansible.builtin.unarchive:
       src: /tmp/frontend.zip
