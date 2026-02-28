@@ -20,7 +20,7 @@
 
   - name: Removing existing app directory
     ansible.builtin.file:
-      src: /app
+      path: /app
       state: absent
   
   - name: Creating app directory
