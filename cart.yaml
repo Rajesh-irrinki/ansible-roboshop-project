@@ -37,7 +37,6 @@
     ansible.builtin.get_url:
       url: https://roboshop-artifacts.s3.amazonaws.com/cart-v3.zip
       dest: /tmp/cart.zip
-      state: present
 
   - name: Unzip the cart code
     ansible.builtin.unarchive:
